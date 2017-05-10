@@ -1,4 +1,6 @@
-"""Copyright (c) 2005-2015, University of Oxford.
+/*
+
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -28,27 +30,45 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
 
-# Example SCons build script for user projects.
+*/
 
-import os
 
-# Get variables exported from the SConstruct file
-Import("*")
+#ifdef CHASTE_CVODE
 
-# Get our project directory name.
-# This assumes that this project is located at <chasteRoot>/projects/<project>.
-# Other things will probably go wrong if this is not the case...
-project_name = os.path.basename(os.path.dirname(os.path.dirname(os.getcwd())))
 
-# Chaste libraries used by this project.
-chaste_libs_used = ['heart']
+#include "Trace.hpp"
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <stdlib.h>
+Trace::Trace(){}
 
-# Change some flags just for this project
-env = SConsTools.CloneEnv(env)
-env['PYCML_EXTRA_ARGS'] = ['--expose-annotated-variables']
+Trace::Trace(std::vector<double> trace)
+{
+	this->assign (trace.begin(), trace.end());
+	return;
+}
 
-# Do the build magic
-result = SConsTools.DoProjectSConscript(project_name, chaste_libs_used, globals())
-Return("result")
+void Trace::operator= (std::vector<double> trace)
+
+{
+	this->assign (trace.begin(), trace.end());
+	return;
+}
+
+double Trace::Integrate(double step_size)
+
+{
+	Trace this_trace = this[0];
+	// use the trapezium rule to numerically integrate trace.	
+	double sum_of_trace = 0;
+	for (unsigned i=0; i <= this_trace.size(); i++)
+	{
+		sum_of_trace += this_trace[i];
+	}
+	return 0.5*step_size*(sum_of_trace*2 - this_trace[0] - this_trace[this_trace.size()-1]);
+
+}
+
+#endif

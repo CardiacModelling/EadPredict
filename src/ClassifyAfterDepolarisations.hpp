@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2016, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,22 +33,23 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef HELLO_HPP_
-#define HELLO_HPP_
+#ifndef CLASSIFYAFTERDEPOLARISATIONS_HPP_
+#define CLASSIFYAFTERDEPOLARISATIONS_HPP_
 
-#include <string>
-
-class Hello
+#include "RegularStimulus.hpp"
+#include "OdeSolution.hpp"
+class ClassifyAfterDepolarisations
 {
-private:
-    std::string mMessage;
-
 public:
-    Hello(const std::string& rMessage);
-    
-    std::string GetMessage();
-    
-    void Complain(const std::string& rComplaint);
+    ClassifyAfterDepolarisations();
+    std::vector<int> mADCount;
+    double ADDensity;
+    int mTotalAds;
+    std::vector<double> mVoltagesAtWhichADsStart;
+    std::string CausedAD(OdeSolution&, boost::shared_ptr<RegularStimulus>, std::string);
+    std::string FindAD(std::vector<double>, std::vector<double>, double, double ,double, double, double, std::string);
+    int GetCount();
+    std::vector<double> GetStarts();
 };
 
-#endif /*HELLO_HPP_*/
+#endif /*DETECTAFTERDEPOLARISATIONS_HPP_*/

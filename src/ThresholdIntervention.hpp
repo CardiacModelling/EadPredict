@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2016, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,20 +33,21 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "Hello.hpp"
-#include "Exception.hpp"
+#ifndef ThresholdIntervention_HPP_
+#define ThresholdIntervention_HPP_
+#include "AbstractCvodeCell.hpp"
 
-Hello::Hello(const std::string& rMessage)
-    : mMessage(rMessage)
-{
-}
+#include "RegularStimulus.hpp"
+#include "OdeSolution.hpp"
 
-std::string Hello::GetMessage()
+class ThresholdIntervention
 {
-    return mMessage;
-}
+public:
+    double end_time, dt;
+    ThresholdIntervention();
+    double FindAtUniformPace(boost::shared_ptr<AbstractCvodeCell> p_model,
+    		boost::shared_ptr<RegularStimulus> p_stimulus,  std::string protocol, int drug_index, int conc_index,
+    		double new_gNa_value, double new_gCaL_value, double new_gKr_value, double new_gpNa_value);
+};
 
-void Hello::Complain(const std::string& rComplaint)
-{
-    EXCEPTION(rComplaint);
-}
+#endif
