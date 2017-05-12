@@ -42,4 +42,4 @@ $ git submodule update
 ```
 
 [Getting Started]: <https://chaste.cs.ox.ac.uk/trac/wiki/GettingStarted>
-[ApPredict]: <https://github.com/Chaste/ApPredict>
+[ApPredict]: <https://github.com/Chaste/ApPredict/releases>
