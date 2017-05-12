@@ -51,6 +51,7 @@ To find EAD thresholds for the drug test pack, run
 ```sh
 cd <chaste source directory>
 scons projects/EadPredict/TestEADs.hpp
+scons projects/EadPredict/TestControlEADs.hpp
 ```
 
 Then run the simulation using the following command line options:
@@ -93,6 +94,9 @@ cd <chaste source directory>
 ./projects/EadPredict/build/debug/TestEADsRunner --model 6 --intervention 2 --ll 0 --hl 1 --IP 0
 ./projects/EadPredict/build/debug/TestEADsRunner --model 6 --intervention 3 --ll 0 --hl 30 --IP 0
 ./projects/EadPredict/build/debug/TestEADsRunner --model 6 --intervention 4 --ll 1 --hl 30 --IP 0
+./projects/EadPredict/build/debug/TestControlEADsRunner --model 6 --intervention 2 --ll 0 --hl 1 --IP 0
+./projects/EadPredict/build/debug/TestControlEADsRunner --model 6 --intervention 3 --ll 0 --hl 30 --IP 0
+./projects/EadPredict/build/debug/TestControlEADsRunner --model 6 --intervention 4 --ll 1 --hl 30 --IP 0
 ```
 
 To get the other metrics:
@@ -105,10 +109,22 @@ scons projects/EadPredict/test/TestOharaLancasterSobie.hpp
 scons projects/EadPredict/test/TestCqinwardMetric.hpp
 scons projects/EadPredict/test/TestControlAPDs.hpp
 ```
-TestControlEADs.hpp
 
-TestCreateTraces.hpp
-TestOutputTraces.hpp
-TestSingleDrugEADs.hpp
+To collate the data into one file for analysis:
 
+```sh
+cp projects/EadPredict/collate_data.py $CHASTE_TEST_OUTPUT
+cd $CHASTE_TEST_OUTPUT
+python collate_data.py
+```
+
+To scale metrics for combination use: `OutputCombinedMetrics.m`
+
+To classify data into categories use the Matlab scripts `ClassifyByCqinward.m` and `Compare\_Classifiers.m`.
+
+To do five-fold validation use the Matlab scripts `Cqinward_Five_Fold_Validation.m` and `Five_Fold_Validation.m`.
+
+To create the dendrograms, run `OrderDendrogram.R` in R followed by `SideBySideDendrograms.m` in Matlab.
+
+To create Figures 2 and 3, run `PlotEADClassificationExamples.m` and `EADComparisonFigure.m`.
 
