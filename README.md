@@ -12,6 +12,8 @@ dependencies and the Chaste source code itself.
 Please see [Getting Started] for details of how to do this 
 (follow instructions for "Development Code User" to keep up to date with the latest code, or a release version if you want longer-term stability).
 
+Chaste version 3.4 is recommended for this project.
+
 The bolt-on ApPredict project is also needed for the APD simulations. Please see the [ApPredict] github page for installation instructions.
 
 ## Installation
