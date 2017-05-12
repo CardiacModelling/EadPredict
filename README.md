@@ -43,3 +43,72 @@ $ git submodule update
 
 [Getting Started]: <https://chaste.cs.ox.ac.uk/trac/wiki/GettingStarted>
 [ApPredict]: <https://github.com/Chaste/ApPredict/releases>
+
+### Simulations
+
+To find EAD thresholds for the drug test pack, run
+
+```sh
+cd <chaste source directory>
+scons projects/EadPredict/TestEADs.hpp
+```
+
+Then run the simulation using the following command line options:
+
+```
+--model
+	1 = shannon_wang_puglisi_weber_bers_2004
+	2 = fink_noble_giles_model_2008
+	3 = ten_tusscher_model_2006_epi
+	4 = ten_tusscher_model_2006_endo
+	5 = ten_tusscher_model_2006_M
+	6 = ohara_rudy_2011
+	7 = grandi_pasqualini_bers_2010_ss
+--intervention
+	1 = cytosolic_sodium_concentration
+	2 = membrane_rapid_delayed_rectifier_potassium_current_conductance
+	3 = membrane_fast_sodium_current_shift_inactivation
+	4 = membrane_L_type_calcium_current_conductance
+	5 = membrane_L_type_calcium_current_conductance_double_extracellular_potassium_concentration
+	6 = membrane_persistent_sodium_current_conductance
+	7 = membrane_rapid_delayed_rectifier_potassium_current_conductance_double_extracellular_potassium_concentration
+	8 =  membrane_fast_sodium_current_shift_inactivation_double_extracellular_potassium_concentration
+	9 = membrane_L_type_calcium_current_conductance_three_quarters_extracellular_potassium_concentration
+	10 = membrane_rapid_delayed_rectifier_potassium_current_conductance_three_quarters_extracellular_potassium_concentration
+	11 = membrane_fast_sodium_current_shift_inactivation_three_quarters_extracellular_potassium_concentration
+	12 = membrane_fast_sodium_current_reduced_inactivation
+--ll [lower limit]
+--hl [higher limit]
+--IP
+	0 = do not create intervention profile 
+	1 = do create intervention profile 
+```
+
+where "model" is the cell model to use, "intervention" is the strategy for inducing EADs, "ll" is the lower limit for the interval bisection protocol and "hl" is the upper limit (if in doubt, use 0 and 50), and "IP" creates an "intervention profile", which shows at which value of the intervention parameter an EAD is created over the whole range. For speed use "--IP 0".
+
+To get the threshold values used for Table 2 in the paper, run: 
+
+```sh
+cd <chaste source directory>
+./projects/EadPredict/build/debug/TestEADsRunner --model 6 --intervention 2 --ll 0 --hl 1 --IP 0
+./projects/EadPredict/build/debug/TestEADsRunner --model 6 --intervention 3 --ll 0 --hl 30 --IP 0
+./projects/EadPredict/build/debug/TestEADsRunner --model 6 --intervention 4 --ll 1 --hl 30 --IP 0
+```
+
+To get the other metrics:
+
+```sh
+cd <chaste source directory>
+scons projects/EadPredict/test/TestAPD90.hpp
+scons projects/EadPredict/test/TestGrandiLancasterSobie.hpp
+scons projects/EadPredict/test/TestOharaLancasterSobie.hpp
+scons projects/EadPredict/test/TestCqinwardMetric.hpp
+scons projects/EadPredict/test/TestControlAPDs.hpp
+```
+TestControlEADs.hpp
+
+TestCreateTraces.hpp
+TestOutputTraces.hpp
+TestSingleDrugEADs.hpp
+
+
