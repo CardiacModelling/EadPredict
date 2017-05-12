@@ -127,7 +127,6 @@ class TestControlEADs : public CxxTest::TestSuite
 					"	10 = membrane_rapid_delayed_rectifier_potassium_current_conductance_three_quarters_extracellular_potassium_concentration\n"
 					"	11 = membrane_fast_sodium_current_shift_inactivation_three_quarters_extracellular_potassium_concentration\n"
 					"	12 = membrane_fast_sodium_current_reduced_inactivation\n"
-					"--sample \n"
 					"--ll [lower limit]\n"
 					"--hl [higher limit]\n"
 					"--IP\n"
@@ -140,7 +139,7 @@ class TestControlEADs : public CxxTest::TestSuite
 			unsigned model_index = CommandLineArguments::Instance()->GetUnsignedCorrespondingToOption("--model");
 			unsigned inter_index = CommandLineArguments::Instance()->GetUnsignedCorrespondingToOption("--intervention");
 			int conc_index = 2;
-			int sample_index = CommandLineArguments::Instance()->GetIntCorrespondingToOption("--sample");
+			int sample_index = 1;
 			bool intervention_profile = CommandLineArguments::Instance()->GetBoolCorrespondingToOption("--IP");
 
 			// put together vector of intervention values for testing
