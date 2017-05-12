@@ -124,9 +124,9 @@ class TestCqinwardsMetric : public CxxTest::TestSuite
 			boost::shared_ptr<AbstractCvodeCell> p_model(new Cellohara_rudy_2011_endoFromCellMLCvode(p_solver, p_stimulus));
 
 			// take in drug data
-			DrugDataReader drug_data("projects/BethM/test/Tox_Res_Paper/curated_dataset.dat");
+			DrugDataReader drug_data("projects/EadPredict/test/curated_dataset.dat");
 			// make sure there are enough drugs
-			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0);
+			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0u);
 			// write down all the channel names
 			std::vector<std::string> ap_predict_channels;
 			ap_predict_channels.push_back("membrane_fast_sodium_current_conductance");
@@ -145,11 +145,11 @@ class TestCqinwardsMetric : public CxxTest::TestSuite
 				original_values.push_back(p_model->GetParameter(ap_predict_channels[i]));
 			}
 			// make sure there are enough drugs
-			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0);
+			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0u);
 
 			// get out the name of the drug
 			std::string drug_name = drug_data.GetDrugName(drug_index) ;
-			TS_ASSERT_DIFFERS(drug_name.length(), 0);
+			TS_ASSERT_DIFFERS(drug_name.length(), 0u);
 			double original_drug_conc = drug_data.GetClinicalDoseRange(drug_index,1u);
 
 			std::ofstream output_file;

@@ -44,6 +44,7 @@ for i=1:length(drugnames)
     cqinwards = cqinwarddata.data(2:end,4);
     trainingdata(i,:) = cqinwards;
 end
+dlmwrite(strcat(start,'cqinwards_results.tsv'),trainingdata,'\t')
 
 %% classify
 for data_point = 1:length(redferns)

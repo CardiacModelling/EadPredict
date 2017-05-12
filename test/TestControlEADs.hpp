@@ -160,7 +160,7 @@ class TestControlEADs : public CxxTest::TestSuite
 
 
 			// take in drug data
-			DrugDataReader drug_data("projects/BethM/test/Tox_Res_Paper/curated_dataset.dat");
+			DrugDataReader drug_data("projects/EadPredict/test/curated_dataset.dat");
 
 			std::vector<std::string> ap_predict_channels;
 			ap_predict_channels.push_back("membrane_fast_sodium_current_conductance");
@@ -214,7 +214,7 @@ class TestControlEADs : public CxxTest::TestSuite
 			std::string fine_filename;
 
 			// make sure there are enough drugs
-			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0);
+			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0u);
 
 			// make new model and give model_creator some more info
 			CreateModel model_creator(inter_index, model_index, p_stimulus, intervention_values, start_time, end_time, dt, drug_name, conc_index, trace_folder);

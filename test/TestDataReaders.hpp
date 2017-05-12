@@ -46,7 +46,7 @@ class TestDataReaders : public CxxTest::TestSuite
 public:
     void TestDrugDataLoading(void) throw(Exception)
     {
-        FileFinder file("projects/BethM/test/Tox_Res_Paper/curated_dataset.dat", RelativeTo::ChasteSourceRoot);
+        FileFinder file("projects/EadPredict/test/curated_dataset.dat", RelativeTo::ChasteSourceRoot);
 
         // Test the drug data loads correctly...
         DrugDataReader drug_data(file);

@@ -64,9 +64,9 @@ class TestAPD90 : public CxxTest::TestSuite
 #ifdef CHASTE_CVODE
 
 			// take in drug data
-			DrugDataReader drug_data("projects/BethM/test/Tox_Res_Paper/curated_dataset.dat");
+			DrugDataReader drug_data("projects/EadPredict/test/curated_dataset.dat");
 			// make sure there are enough drugs
-			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0);
+			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0u);
 			
 			// for running simulations
 			//double start_time = 0.0;
@@ -91,7 +91,7 @@ class TestAPD90 : public CxxTest::TestSuite
 			{
 				// get out the name of the drug
 				std::string drug_name = drug_data.GetDrugName(drug_index) ;
-				TS_ASSERT_DIFFERS(drug_name.length(), 0);
+				TS_ASSERT_DIFFERS(drug_name.length(), 0u);
 
 				double drug_conc = drug_data.GetClinicalDoseRange(drug_index,1u);
 				// make a new model

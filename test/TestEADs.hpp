@@ -160,9 +160,9 @@ class TestEads : public CxxTest::TestSuite
 
 
 			// take in drug data
-			DrugDataReader drug_data("projects/BethM/test/Tox_Res_Paper/curated_dataset.dat");
+			DrugDataReader drug_data("projects/EadPredict/test/curated_dataset.dat");
 			// make sure there are enough drugs
-			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0);
+			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0u);
 			
 				std::vector<std::string> ap_predict_channels;
 				ap_predict_channels.push_back("membrane_fast_sodium_current_conductance");
@@ -216,14 +216,14 @@ class TestEads : public CxxTest::TestSuite
 			std::string fine_filename;
 
 			// make sure there are enough drugs
-			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0);
+			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0u);
 
 			// loop through all the drugs
 			for (unsigned int drug_index=0; drug_index < drug_data.GetNumDrugs(); drug_index++)
 			{
 				// get out the name of the drug
 				std::string drug_name = drug_data.GetDrugName(drug_index) ;
-				TS_ASSERT_DIFFERS(drug_name.length(), 0);
+				TS_ASSERT_DIFFERS(drug_name.length(), 0u);
 
 				double drug_conc = drug_data.GetClinicalDoseRange(drug_index,1u);
 				std::cout << drug_name << "\n";

@@ -99,9 +99,9 @@ class TestControlAPDs : public CxxTest::TestSuite
 #ifdef CHASTE_CVODE
 
 			// take in drug data
-			DrugDataReader drug_data("projects/BethM/test/Tox_Res_Paper/curated_dataset.dat");
+			DrugDataReader drug_data("projects/EadPredict/test/curated_dataset.dat");
 			// make sure there are enough drugs
-			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0);
+			TS_ASSERT_DIFFERS(drug_data.GetNumDrugs(),0u);
 
 			// for running simulations
 			double start_time = 0.0;

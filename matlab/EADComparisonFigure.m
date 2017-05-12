@@ -9,7 +9,7 @@ controls = {'1_drug_effect_traces_cisapride_0_1','1_drug_effect_traces_cisapride
 cisapride = {'1_drug_effect_traces_cisapride_1_1','1_drug_effect_traces_cisapride_1_9','1_drug_effect_traces_cisapride_1_27','1_drug_effect_traces_cisapride_1_31'};
 nitrendipine = {'1_drug_effect_traces_nitrendipine_1_1','1_drug_effect_traces_nitrendipine_1_9','1_drug_effect_traces_nitrendipine_1_27','1_drug_effect_traces_nitrendipine_1_31'};
 filenames = {nitrendipine;controls;cisapride};
-drugnames = {'nitrendipine','controls','cisapride'};
+drugnames = {'nitrendipine','control','cisapride'};
 change = {'g_{CaL} \times 1.00','g_{CaL} \times 9','g_{CaL} \times 25','g_{CaL} \times 28'};
 start = getenv('CHASTE_TEST_OUTPUT');
 
