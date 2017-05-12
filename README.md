@@ -118,13 +118,13 @@ cd $CHASTE_TEST_OUTPUT
 python collate_data.py
 ```
 
-To scale metrics for combination use: `OutputCombinedMetrics.m`
+To scale metrics for combination use the Matlab script `OutputCombinedMetrics.m`.
 
-To classify data into categories use the Matlab scripts `ClassifyByCqinward.m` and `Compare\_Classifiers.m`.
+To classify data into categories use the Matlab scripts `ClassifyByCqinward.m` and `Compare_Classifiers.m`.
 
 To do five-fold validation use the Matlab scripts `Cqinward_Five_Fold_Validation.m` and `Five_Fold_Validation.m`.
 
 To create the dendrograms, run `OrderDendrogram.R` in R followed by `SideBySideDendrograms.m` in Matlab.
 
-To create Figures 2 and 3, run `PlotEADClassificationExamples.m` and `EADComparisonFigure.m`.
+To create Figures 2 and 3, run the Matlab scripts `PlotEADClassificationExamples.m` and `EADComparisonFigure.m`.
 
