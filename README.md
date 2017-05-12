@@ -12,6 +12,8 @@ dependencies and the Chaste source code itself.
 Please see [Getting Started] for details of how to do this 
 (follow instructions for "Development Code User" to keep up to date with the latest code, or a release version if you want longer-term stability).
 
+The bolt-on ApPredict project is also needed for the APD simulations. Please see the [ApPredict] github page for installation instructions.
+
 ## Installation
 
 This repo must be cloned into
@@ -38,3 +40,4 @@ $ git submodule update
 ```
 
 [Getting Started]: <https://chaste.cs.ox.ac.uk/trac/wiki/GettingStarted>
+[ApPredict]: <https://github.com/Chaste/ApPredict>
