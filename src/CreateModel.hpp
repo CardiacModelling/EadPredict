@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2017, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -58,6 +58,7 @@ public:
 	std::vector<double> mDrugConductanceFactors, mSteadyStateVariables, mOldSolution, mDruggedConductanceValues, mInterventionInitialState, mLimits;
 	std::string mModelName, mInterventionType, mDrugName, mTraceFolder, mInterventionHardLimit;
 	int mConcIndex;
+	double mSkip, mIncrement;
     CreateModel(unsigned int inter_index, unsigned int model_index, boost::shared_ptr<RegularStimulus> p_stimulus, std::vector<double> intervention_values,
     		double start_time, double end_time, double dt, std::string drug_name, int conc_index, std::string trace_filename);
     CreateModel();
@@ -75,7 +76,8 @@ public:
     std::vector<int> PossibleCombinations();
     std::string GetModelName();
     std::string GetInterventionName();
-
+    void SkipTime(double skip_time);
+    void ChangeIncrement(double);
 
 };
 

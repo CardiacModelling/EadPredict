@@ -1,35 +1,35 @@
 /*
 
-Copyright (c) 2005-2017, University of Oxford.
-All rights reserved.
+   Copyright (c) 2005-2016, University of Oxford.
+   All rights reserved.
 
-University of Oxford means the Chancellor, Masters and Scholars of the
-University of Oxford, having an administrative office at Wellington
-Square, Oxford OX1 2JD, UK.
+   University of Oxford means the Chancellor, Masters and Scholars of the
+   University of Oxford, having an administrative office at Wellington
+   Square, Oxford OX1 2JD, UK.
 
-This file is part of Chaste.
+   This file is part of Chaste.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice,
-   this list of conditions and the following disclaimer.
+ this list of conditions and the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
  * Neither the name of the University of Oxford nor the names of its
-   contributors may be used to endorse or promote products derived from this
-   software without specific prior written permission.
+ contributors may be used to endorse or promote products derived from this
+ software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
@@ -46,6 +46,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ten_tusscher_model_2006_MCvode.hpp"
 #include "noble_model_1998Cvode.hpp"
 #include "ohara_rudy_2011_endoCvode.hpp"
+#include "ohara_rudy_2011_epiCvode.hpp"
 #include "grandi_pasqualini_bers_2010_ssCvode.hpp"
 #include "AbstractCvodeCell.hpp"
 #include "DetectAfterDepolarisations.hpp"
@@ -59,14 +60,16 @@ CreateModel::CreateModel(unsigned int inter_index, unsigned int model_index,
 		double start_time, double end_time, double dt, std::string drug_name, int conc_index,
 		std::string trace_folder)
 :  mInterIndex(inter_index),
-   mStartTime(start_time),
-   mEndTime(end_time),
-   mDt(dt),
-   mpStimulus(p_stimulus),
-   mInterventionValues(intervention_values),
-   mDrugName(drug_name),
-   mTraceFolder(trace_folder),
-   mConcIndex(conc_index)
+	mStartTime(start_time),
+	mEndTime(end_time),
+	mDt(dt),
+	mpStimulus(p_stimulus),
+	mInterventionValues(intervention_values),
+	mDrugName(drug_name),
+	mTraceFolder(trace_folder),
+	mConcIndex(conc_index),
+	mSkip(0),
+	mIncrement(1)
 {
 	boost::shared_ptr<AbstractIvpOdeSolver> p_solver;
 
@@ -109,6 +112,11 @@ CreateModel::CreateModel(unsigned int inter_index, unsigned int model_index,
 		p_model = p_new_model;
 
 	}
+	else if (model_index == 8)
+	{
+		boost::shared_ptr<AbstractCvodeCell> p_new_model(new Cellohara_rudy_2011_epiFromCellMLCvode(p_solver, mpStimulus));
+		p_model = p_new_model;
+	}
 
 	mpModel = p_model;
 	mModelName = mpModel->GetSystemName();
@@ -118,28 +126,24 @@ CreateModel::CreateModel(unsigned int inter_index, unsigned int model_index,
 	{
 		mInterventionType = "StateVariable";
 		mIntervention.push_back("cytosolic_sodium_concentration");
-		mInterventionHardLimit = "AboveZero";
 
 	}
-	else if (mInterIndex ==  2)
+	else if (mInterIndex ==  2 or mInterIndex == 13)
 	{
 		mInterventionType = "Parameter";
 		mIntervention.push_back("membrane_rapid_delayed_rectifier_potassium_current_conductance");
-		mInterventionHardLimit = "BelowOne";
 
 	}
 	else if (mInterIndex == 3)
 	{
 		mInterventionType = "Parameter";
 		mIntervention.push_back("membrane_fast_sodium_current_shift_inactivation");
-		mInterventionHardLimit = "AboveZero";
 
 	}
-	else if (mInterIndex == 4)
+	else if (mInterIndex == 4 or mInterIndex == 14)
 	{
 		mInterventionType = "Parameter";
 		mIntervention.push_back("membrane_L_type_calcium_current_conductance");
-		mInterventionHardLimit = "AboveZero";
 
 	}
 	else if (mInterIndex == 5)
@@ -147,7 +151,6 @@ CreateModel::CreateModel(unsigned int inter_index, unsigned int model_index,
 		mInterventionType = "TwoParameters";
 		mIntervention.push_back("membrane_L_type_calcium_current_conductance");
 		mIntervention.push_back("extracellular_potassium_concentration");
-		mInterventionHardLimit = "AboveZero";
 	}
 
 	else if (mInterIndex == 6)
@@ -161,43 +164,45 @@ CreateModel::CreateModel(unsigned int inter_index, unsigned int model_index,
 		mInterventionType = "TwoParameters";
 		mIntervention.push_back("membrane_rapid_delayed_rectifier_potassium_current_conductance");
 		mIntervention.push_back("extracellular_potassium_concentration");
-		mInterventionHardLimit = "BelowOne";
 	}
 	else if (mInterIndex == 8)
 	{
 		mInterventionType = "TwoParameters";
 		mIntervention.push_back("membrane_fast_sodium_current_shift_inactivation");
 		mIntervention.push_back("extracellular_potassium_concentration");
-		mInterventionHardLimit = "AboveZero";
 	}
 	else if (mInterIndex == 9)
 	{
 		mInterventionType = "TwoParameters";
 		mIntervention.push_back("membrane_L_type_calcium_current_conductance");
 		mIntervention.push_back("extracellular_potassium_concentration");
-		mInterventionHardLimit = "AboveZero";
 	}
 	else if (mInterIndex == 10)
 	{
 		mInterventionType = "TwoParameters";
 		mIntervention.push_back("membrane_rapid_delayed_rectifier_potassium_current_conductance");
 		mIntervention.push_back("extracellular_potassium_concentration");
-		mInterventionHardLimit = "BelowOne";
 	}
 	else if (mInterIndex == 11)
 	{
 		mInterventionType = "TwoParameters";
 		mIntervention.push_back("membrane_fast_sodium_current_shift_inactivation");
 		mIntervention.push_back("extracellular_potassium_concentration");
-		mInterventionHardLimit = "AboveZero";
 	}
 	else if (mInterIndex ==  12)
 	{
 		mInterventionType = "Parameter";
 		mIntervention.push_back("membrane_fast_sodium_current_reduced_inactivation");
-		mInterventionHardLimit = "AboveZero";
 
 	}
+	else if (mInterIndex == 15)
+	{
+		mInterventionType = "Parameter";
+		mIntervention.push_back("membrane_slow_delayed_rectifier_potassium_current_conductance");
+	}
+
+	std::cout << "Model name: " << mModelName << "\n";
+	std::cout << "Intervention: " << mInterventionType << " " << mIntervention[0] << "\n";
 
 }
 
@@ -238,23 +243,26 @@ void CreateModel::Drug (std::vector<double>conductance_factors, std::vector<std:
 		}
 	}
 
+
 	// get initial intervention values
 	if (mInterIndex == 1)
 	{
 		mInterventionInitialState.push_back(1);
-		std::cout << "Original value is: " << mpModel->GetStateVariable(mIntervention[0]) << "\n";
+		//std::cout << "Original value is: " << mpModel->GetStateVariable(mIntervention[0]) << "\n";
 	}
-	else if (mInterIndex ==  2)
+	else if (mInterIndex ==  2 || mInterIndex == 13)
 	{
 		mInterventionInitialState.push_back(mpModel->GetParameter(mIntervention[0]));
+		//std::cout << "Original value of " << mIntervention[0] << " is " << mInterventionInitialState[0] << "\n";
 	}
 	else if (mInterIndex == 3)
 	{
 		this->mInterventionInitialState.push_back(0);
 	}
-	else if (mInterIndex == 4)
+	else if (mInterIndex == 4 || mInterIndex == 14)
 	{
 		mInterventionInitialState.push_back(mpModel->GetParameter(mIntervention[0]));
+		//std::cout << "Original value of " << mIntervention[0] << " is " << mInterventionInitialState[0] << "\n";
 
 	}
 	else if (mInterIndex == 5)
@@ -298,13 +306,17 @@ void CreateModel::Drug (std::vector<double>conductance_factors, std::vector<std:
 		mInterventionInitialState.push_back(mpModel->GetParameter(mIntervention[0]));
 	}
 
+	else if (mInterIndex == 15)
+	{
+		mInterventionInitialState.push_back(mpModel->GetParameter(mIntervention[0]));
+	}
 }
 
 bool CreateModel::GetToSteadyState()
 {
 	SteadyStateRunner steady_runner(mpModel);
 	bool result = steady_runner.RunToSteadyState();
-	
+
 	// Reset intervention variable
 	if (mInterventionType == "StateVariable")
 	{
@@ -334,8 +346,15 @@ bool CreateModel::ResetAndCheck()
 	// apply drug effects to model
 	for (unsigned int i = 0 ; i< mDruggedConductanceValues.size(); i++)
 	{
-		mpModel->SetParameter(mDrugParameterNames[i], mDruggedConductanceValues[i]);
+		try
+		{
+			mpModel->SetParameter(mDrugParameterNames[i], mDruggedConductanceValues[i]);
+		}
 
+		catch(Exception &e)
+		{
+			std::cout << "No " << mDrugParameterNames[i] << "\n";
+		}
 	}
 	// reset state variables, including intervention state variable
 	mpModel->SetStateVariables(mSteadyStateVariables);
@@ -439,14 +458,33 @@ int CreateModel::DoTheIntervention(double intervention_value, std::string output
 	{
 		mpModel->SetParameter(mIntervention[0],intervention_value);
 	}
+	else if (mInterIndex ==  13)
+	{
+		mpModel->SetParameter(mIntervention[0],(mInterventionInitialState[0])+intervention_value);
+	}
+	else if (mInterIndex == 14)
+	{
+		mpModel->SetParameter(mIntervention[0],mInterventionInitialState[0]+intervention_value);
+	}
+	else if (mInterIndex == 15)
+	{
+		mpModel->SetParameter(mIntervention[0],mInterventionInitialState[0]*intervention_value);
+	}
 	// check for an afterdepolarisation
 	OdeSolution solution ;
 
 	try
 	{
-	    Timer::Reset();
-		solution = mpModel->Solve(mStartTime,mEndTime,mpStimulus->GetDuration(), mDt);
-		std::cout << mEndTime - mStartTime << " ms solve took " << Timer::GetElapsedTime() << "s.\n"<< std::flush;
+
+		if(mSkip > 0)
+		{
+			mpModel->Solve(mStartTime,mSkip,mpStimulus->GetDuration(), mDt);
+		}
+
+		//Timer::Reset();
+		// std::cout << "Begin: " << mStartTime+mSkip << "\nEnd: " << mEndTime << "\n";
+		solution = mpModel->Solve(mStartTime+mSkip,mEndTime,mpStimulus->GetDuration(), mDt);
+		//std::cout << mEndTime - mStartTime << " ms solve took " << Timer::GetElapsedTime() << "s.\n"<< std::flush;
 	}
 	catch (Exception &e)
 	{
@@ -454,10 +492,10 @@ int CreateModel::DoTheIntervention(double intervention_value, std::string output
 		return -2;
 	}
 
-	Timer::Reset();
+	//Timer::Reset();
 	DetectAfterDepolarisations AD_test;
 	int result = AD_test.CausedAD(solution, mpStimulus, output_filename, true);
-    std::cout << "AD detection took " << Timer::GetElapsedTime() << "s.\n"<< std::flush;
+	//std::cout << "AD detection took " << Timer::GetElapsedTime() << "s.\n"<< std::flush;
 
 	return result;
 }
@@ -490,6 +528,10 @@ std::string CreateModel::GetIdentifier()
 	{
 		return (mModelName + mIntervention[0] + "_three_quarters_" + mIntervention[1]);
 	}
+	else if (mInterIndex == 14 || mInterIndex == 13)
+	{
+		return (mModelName + mIntervention[0] + "_additive");
+	}
 
 	return (mModelName + mIntervention[0]);
 }
@@ -499,7 +541,7 @@ bool CreateModel::GetExpectedChange()
 {
 	// Returns true if the intervention is expected to go from no AD to an AD as the intervention increases (i.e. IKr conductance)
 	// Returns false otherwise
-	if (mInterIndex == 2 || mInterIndex == 7 || mInterIndex == 10 )
+	if (mInterIndex == 2 || mInterIndex == 7 || mInterIndex == 10 || mInterIndex == 15)
 	{
 		return false;
 	}
@@ -531,7 +573,7 @@ bool CreateModel::IntervalBisection(bool result)
 	std::string output_filename;
 	output_namestream << mTraceFolder << "/Bisection/" << mDrugName << mConcIndex << GetIdentifier();	/* is there an AD? */
 	output_filename = output_namestream.str();
-	std::cout << "Intervention value:  " << mLimits[0] << "\n2:  " << mLimits[1] << "\n3:  " << mLimits[2] << "\n";
+	//	std::cout << "Intervention value:  " << mLimits[0] << "\n2:  " << mLimits[1] << "\n3:  " << mLimits[2] << "\n";
 
 	bool expected_result = GetExpectedChange();
 
@@ -542,7 +584,8 @@ bool CreateModel::IntervalBisection(bool result)
 		if (result == expected_result)
 		{
 			std::cout << "Unexpected result at lower limit\n";
-			mLimits[0] = mLimits[0] - 1;
+			std::cout << "At: " << mLimits[0] << "\n";
+			mLimits[0] = mLimits[0] - mIncrement;
 			// mLimits = {new_lower_limit, upper_limit, -2}
 
 		}
@@ -562,7 +605,8 @@ bool CreateModel::IntervalBisection(bool result)
 		if (result != expected_result)
 		{
 			std::cout << "Unexpected result at higher limit\n";
-			mLimits[0] = mLimits[0] + 1;
+			std::cout << "At: " << mLimits[0] << "\n";
+			mLimits[0] = mLimits[0] + mIncrement;
 			// mLimits = {new_upper_limit, lower_limit, -3}
 
 		}
@@ -632,3 +676,16 @@ std::string CreateModel::GetInterventionName()
 	return "hello";
 }
 
+void CreateModel::SkipTime(double skip_time)
+{
+
+	mSkip = skip_time;
+	return;
+
+}
+
+void CreateModel::ChangeIncrement(double new_increment)
+{
+	mIncrement = new_increment;
+	return;
+}
